@@ -30,7 +30,6 @@
 .cert-course { left: 25mm; top: 40mm; width: 247mm; font-size: 22pt; font-weight: 600; color: #1E4FA3; line-height: 1.1; }
 .cert-course-long { font-size: 17pt; }
 .cert-batch { left: 0; top: 53mm; width: 297mm; font-size: 10.5pt; letter-spacing: 0.2em; text-transform: uppercase; color: #3a4a66; line-height: 1; }
-.cert-to { text-transform: none; font-style: italic; letter-spacing: 0.05em; }
 .cert-place { left: 0; top: 60mm; width: 297mm; font-size: 9pt; letter-spacing: 0.28em; text-transform: uppercase; color: #B8893A; line-height: 1; }
 
 .cert-signer { top: 138mm; width: 70mm; text-align: center; height: 34mm; }

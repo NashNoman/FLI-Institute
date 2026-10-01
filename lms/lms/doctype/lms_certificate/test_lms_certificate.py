@@ -2,7 +2,10 @@
 # See license.txt
 
 import frappe
-from frappe.tests import IntegrationTestCase
+try:
+	from frappe.tests import IntegrationTestCase
+except ImportError:  # Frappe v15
+	from frappe.tests.utils import FrappeTestCase as IntegrationTestCase
 from frappe.utils import add_days, nowdate
 
 from lms.lms.doctype.lms_certificate.lms_certificate import (
@@ -67,10 +70,10 @@ class TestLMSCertificate(IntegrationTestCase):
 			doc.insert()
 
 	def test_token_and_serial_are_generated_and_not_client_settable(self):
-		first = make_certificate("Administrator", verification_token="client", serial_number="1")
+		first = make_certificate("Administrator", verification_token="client", serial_number="ZZ-CLIENT")
 		second = make_certificate("Administrator")
 		self.assertNotEqual(first.verification_token, "client")
-		self.assertNotEqual(first.serial_number, "1")
+		self.assertNotEqual(first.serial_number, "ZZ-CLIENT")
 		self.assertGreaterEqual(len(first.verification_token), 16)
 		self.assertNotEqual(first.verification_token, second.verification_token)
 		self.assertNotEqual(first.serial_number, second.serial_number)

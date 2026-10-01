@@ -3,6 +3,8 @@ import io
 import json
 import mimetypes
 import re
+import struct
+import zlib
 from html import escape
 
 import frappe
@@ -141,14 +143,46 @@ def _file_to_url(url):
 	return get_url(url)
 
 
+def _png_from_matrix(matrix, scale=8, quiet_zone=1):
+	"""Encode a QR module matrix as a 1-bit PNG. No imaging library needed."""
+	size = (len(matrix) + 2 * quiet_zone) * scale
+	row_modules = [0] * quiet_zone
+	rows = []
+	blank = bytes([255] * ((size + 7) // 8))
+	for _i in range(quiet_zone * scale):
+		rows.append(b"\x00" + blank)
+	for line in matrix:
+		modules = row_modules + [int(v) for v in line] + row_modules
+		bits = []
+		for module in modules:
+			bits.extend([0 if module else 1] * scale)
+		bits.extend([1] * (-len(bits) % 8))
+		packed = bytes(int("".join(map(str, bits[i : i + 8])), 2) for i in range(0, len(bits), 8))
+		rows.extend([b"\x00" + packed] * scale)
+	for _i in range(quiet_zone * scale):
+		rows.append(b"\x00" + blank)
+
+	def chunk(kind, data):
+		body = kind + data
+		return struct.pack(">I", len(data)) + body + struct.pack(">I", zlib.crc32(body) & 0xFFFFFFFF)
+
+	header = struct.pack(">IIBBBBB", size, size, 1, 0, 0, 0, 0)
+	return (
+		b"\x89PNG\r\n\x1a\n"
+		+ chunk(b"IHDR", header)
+		+ chunk(b"IDAT", zlib.compress(b"".join(rows), 9))
+		+ chunk(b"IEND", b"")
+	)
+
+
 def _qr_data_uri(text):
 	try:
 		import pyqrcode
 
-		buffer = io.BytesIO()
-		pyqrcode.create(text, error="M").png(buffer, scale=8, quiet_zone=1)
-		return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode()
+		matrix = pyqrcode.create(text, error="M").code
+		return "data:image/png;base64," + base64.b64encode(_png_from_matrix(matrix)).decode()
 	except Exception:
+		frappe.log_error(title="Certificate QR code could not be generated")
 		return ""
 
 
@@ -298,6 +332,7 @@ def _page_shell(template, body, extra_css=""):
 <style>
 {_font_face_css()}
 @page {{ size: {page_size} {orientation.lower()}; margin: 0; }}
+.print-format {{ margin-top: 0mm; margin-bottom: 0mm; margin-left: 0mm; margin-right: 0mm; page-size: {page_size}; orientation: {orientation}; }}
 html, body {{ margin: 0; padding: 0; background: #fff; }}
 body {{ font-family: {FONT_STACKS[DEFAULT_FONT]}; }}
 .cert-page {{ position: relative; width: {width}mm; height: {height}mm; overflow: hidden; }}

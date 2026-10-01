@@ -4,7 +4,10 @@
 import json
 
 import frappe
-from frappe.tests import IntegrationTestCase
+try:
+	from frappe.tests import IntegrationTestCase
+except ImportError:  # Frappe v15
+	from frappe.tests.utils import FrappeTestCase as IntegrationTestCase
 
 from lms.lms.certificate_renderer import (
 	build_context,
