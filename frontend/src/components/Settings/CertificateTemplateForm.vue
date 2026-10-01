@@ -103,8 +103,9 @@
 							class="relative w-full overflow-hidden border rounded bg-white"
 							:style="{ height: `${previewHeight}px` }"
 						>
+							<!-- No allow-scripts: nothing can run in here. allow-same-origin only lets the preview load the app's fonts. -->
 							<iframe
-								sandbox=""
+								sandbox="allow-same-origin"
 								:srcdoc="previewHtml"
 								class="absolute left-0 top-0 border-0 bg-white"
 								:style="iframeStyle"
@@ -141,15 +142,15 @@
 					<div v-for="index in [1, 2]" :key="index" class="space-y-3">
 						<FormControl
 							v-model="template[`signer_${index}_name`]"
-							:label="__('Signer {0} Name').replace('{0}', index)"
+							:label="__('Signer {0} Name').format(index)"
 						/>
 						<FormControl
 							v-model="template[`signer_${index}_title`]"
-							:label="__('Signer {0} Title').replace('{0}', index)"
+							:label="__('Signer {0} Title').format(index)"
 						/>
 						<div>
 							<div class="text-xs text-ink-gray-5 mb-2">
-								{{ __('Signer {0} Signature').replace('{0}', index) }}
+								{{ __('Signer {0} Signature').format(index) }}
 							</div>
 							<Uploader v-model="template[`signer_${index}_signature`]" />
 						</div>

@@ -4,6 +4,7 @@
 import json
 
 import frappe
+
 try:
 	from frappe.tests import IntegrationTestCase
 except ImportError:  # Frappe v15
@@ -122,3 +123,23 @@ class TestLMSCertificateTemplate(IntegrationTestCase):
 		self.assertEqual(resolve_certificate_template(course, batch), course_template.name)
 		frappe.db.set_value("LMS Certificate Template", course_template.name, "enabled", 0)
 		self.assertEqual(resolve_certificate_template(course, batch), default_template.name)
+
+	def test_arabic_values_are_flagged(self):
+		context = build_context({"student_name": "محمد الأحمد", "course_title": "English"}, {})
+		self.assertTrue(context["student_name_is_arabic"])
+		self.assertFalse(context["course_title_is_arabic"])
+		self.assertFalse(context["batch_title_is_arabic"])
+
+	def test_qr_png_is_a_valid_png_without_pypng(self):
+		import struct
+		import zlib
+
+		from lms.lms.certificate_renderer import _png_from_matrix
+
+		matrix = [[1, 0, 1], [0, 1, 0], [1, 0, 1]]
+		png = _png_from_matrix(matrix, scale=4, quiet_zone=1)
+		self.assertTrue(png.startswith(b"\x89PNG\r\n\x1a\n"))
+		width, height = struct.unpack(">II", png[16:24])
+		self.assertEqual((width, height), (20, 20))
+		data = png[png.index(b"IDAT") + 4 : png.index(b"IEND") - 8]
+		self.assertEqual(len(zlib.decompress(data)), 20 * (1 + 3))

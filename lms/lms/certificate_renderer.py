@@ -21,6 +21,7 @@ DATE_FORMAT = "dd MMM yyyy"
 MAX_INLINE_FILE_SIZE = 8 * 1024 * 1024
 MAX_LAYOUT_ELEMENTS = 60
 LONG_NAME_LENGTH = 28
+ARABIC_RE = re.compile("[\u0600-\u06ff\u0750-\u077f\ufb50-\ufdff\ufe70-\ufeff]")
 
 TEXT_KEYS = (
 	"student_name",
@@ -46,7 +47,7 @@ LAYOUT_FIELDS = tuple(key for key in TEXT_KEYS if key != "logo_url") + IMAGE_KEY
 
 ARABIC_FALLBACK = '"Noto Naskh Arabic", "Amiri", serif'
 FONT_STACKS = {
-	"EB Garamond": f'"EB Garamond", Georgia, "Times New Roman", {ARABIC_FALLBACK}',
+	"EB Garamond": '"EB Garamond", "Noto Naskh Arabic", Georgia, "Times New Roman", "Amiri", serif',
 	"Noto Naskh Arabic": ARABIC_FALLBACK,
 	"Georgia": f'Georgia, "Times New Roman", {ARABIC_FALLBACK}',
 	"Helvetica": f'"Helvetica Neue", Helvetica, Arial, {ARABIC_FALLBACK}',
@@ -194,6 +195,10 @@ def _image_markup(url, css_class, alt):
 
 def build_context(values, images):
 	context = {key: str(values.get(key) or "") for key in TEXT_KEYS}
+	# wkhtmltopdf cannot fall back between web fonts per glyph, so templates need to know
+	# when a value is Arabic to switch its font family (`{{ student_name_is_arabic }}`)
+	for key in TEXT_KEYS:
+		context[f"{key}_is_arabic"] = bool(ARABIC_RE.search(context[key]))
 	context["logo_url"] = images.get("logo") or ""
 	context["qr_code"] = _image_markup(images.get("qr_code"), "cert-qr", "QR code")
 	context["logo"] = _image_markup(images.get("logo"), "cert-logo", "Logo")
@@ -385,6 +390,8 @@ def _render_image_template(template, values, images):
 			font_pt = font_pt * LONG_NAME_LENGTH / len(text)
 
 		stack = FONT_STACKS.get(element.get("font_family") or DEFAULT_FONT, FONT_STACKS[DEFAULT_FONT])
+		if ARABIC_RE.search(text):
+			stack = FONT_STACKS["Noto Naskh Arabic"]
 		color = element.get("color") or "#000000"
 		style = (
 			f"position:absolute;left:{left:.2f}mm;top:{top:.2f}mm;width:{box:.2f}mm;"

@@ -36,12 +36,12 @@
 
 <div class="cert-body{% if not logo %} cert-body-high{% endif %}">
 	<div class="cert-lead">This is to certify that</div>
-	<div class="cert-name{% if student_name|length > 38 %} cert-name-xl{% elif student_name|length > 28 %} cert-name-long{% endif %}">{{ student_name }}</div>
+	<div class="cert-name{% if student_name|length > 38 %} cert-name-xl{% elif student_name|length > 28 %} cert-name-long{% endif %}{% if student_name_is_arabic %} cert-ar{% endif %}">{{ student_name }}</div>
 	<div class="cert-name-rule"></div>
 	<div class="cert-lead cert-lead-2">has successfully completed</div>
-	<div class="cert-course{% if course_title|length > 60 %} cert-course-long{% endif %}">{{ course_title }}</div>
+	<div class="cert-course{% if course_title|length > 60 %} cert-course-long{% endif %}{% if course_title_is_arabic %} cert-ar{% endif %}">{{ course_title }}</div>
 	{% if batch_title or (start_date and end_date) %}
-	<div class="cert-batch">{% if batch_title %}{{ batch_title }}{% endif %}{% if start_date and end_date %}{% if batch_title %} &middot; {% endif %}{{ start_date }} &ndash; {{ end_date }}{% endif %}</div>
+	<div class="cert-batch{% if batch_title_is_arabic %} cert-ar{% endif %}">{% if batch_title %}{{ batch_title }}{% endif %}{% if start_date and end_date %}{% if batch_title %} &middot; {% endif %}{{ start_date }} &ndash; {{ end_date }}{% endif %}</div>
 	{% endif %}
 	<div class="cert-place">Faculty Language Institute &middot; Sana'a, Republic of Yemen</div>
 </div>

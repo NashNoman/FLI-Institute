@@ -15,7 +15,7 @@ export const getPageSize = (pageSize, orientation) => {
 
 export const FONT_FAMILIES = {
 	'EB Garamond':
-		'"EB Garamond", Georgia, "Times New Roman", "Noto Naskh Arabic", "Amiri", serif',
+		'"EB Garamond", "Noto Naskh Arabic", Georgia, "Times New Roman", "Amiri", serif',
 	'Noto Naskh Arabic': '"Noto Naskh Arabic", "Amiri", serif',
 	Georgia: 'Georgia, "Times New Roman", "Noto Naskh Arabic", "Amiri", serif',
 	Helvetica:

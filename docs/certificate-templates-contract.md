@@ -31,6 +31,8 @@ Use `{{ name }}`. Text placeholders are auto-escaped strings (empty string when 
 | `logo` | image | `<img class="cert-logo">`; site brand logo (Website Settings `app_logo`, else `banner_image`, else `/assets/lms/images/lms-logo.png`) |
 | `signature_1`, `signature_2` | image | `<img class="cert-signature">`; empty when no signature |
 
+Every text placeholder also has a boolean `<name>_is_arabic` (for example `student_name_is_arabic`), true when the value contains Arabic letters. wkhtmltopdf cannot fall back between web fonts per glyph, so switch the font yourself: `<div class="cert-name{% if student_name_is_arabic %} cert-ar{% endif %}">` with `.cert-ar { font-family: "Noto Naskh Arabic", serif; letter-spacing: 0; }`. Image layouts do this automatically.
+
 Also available: `_("text")` for translation. Nothing else: no `frappe`, `doc` or Jinja globals. The environment is an immutable Jinja sandbox; `**`, any `*` on strings, private attributes and `{% include %}` are rejected. `<script>` tags are stripped; CSS has `@import`, `<style` and comments removed.
 
 ## Image templates: `layout_json`
@@ -74,4 +76,8 @@ The PDF engine is old QtWebKit. In a template use only:
 - no flexbox, grid, CSS variables, `calc()`, `gap`, `:is()` / `:where()`, `object-fit`, `@import` or script
 - inline SVG without filters or masks; `-webkit-transform` for mirroring
 - fonts via the families in `fonts.css` (`EB Garamond`, `Noto Naskh Arabic`), which are registered by the page shell
+- no SVG `opacity` / `stroke-opacity` / `fill-opacity` (ignored in the PDF): use a pre-blended solid colour
+- no `unicode-range`; Arabic text needs its own font family (see `*_is_arabic` above)
 - keep everything inside the page: nothing may spill to a second page
+
+Page size, orientation and zero margins are set by the renderer through a `.print-format { ... }` rule (the only mechanism Frappe v15 honours); do not override them.

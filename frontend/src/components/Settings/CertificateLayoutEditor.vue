@@ -191,9 +191,19 @@ const boxStyle = (element) => ({
 	width: `${element.width}%`,
 })
 
+// The renderer shrinks long student names proportionally.
+const LONG_NAME_LENGTH = 28
+
+const fontScale = (element) => {
+	const length = sampleText(element.field).length
+	return element.field == 'student_name' && length > LONG_NAME_LENGTH
+		? LONG_NAME_LENGTH / length
+		: 1
+}
+
 const textStyle = (element) => ({
 	fontFamily: FONT_FAMILIES[element.font_family || DEFAULT_FONT],
-	fontSize: `${((element.font_size || 3) * pageHeightPx()) / 100}px`,
+	fontSize: `${((element.font_size || 3) * pageHeightPx() * fontScale(element)) / 100}px`,
 	lineHeight: 1.15,
 	color: element.color || '#000000',
 	textAlign: element.align || 'left',

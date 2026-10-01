@@ -51,12 +51,7 @@
 				/>
 				<div v-if="summary" class="space-y-2 text-sm border-t pt-3">
 					<div class="text-ink-gray-9 font-medium">
-						{{
-							__('{0} certificates created').replace(
-								'{0}',
-								summary.created.length,
-							)
-						}}
+						{{ __('{0} certificates created').format(summary.created.length) }}
 					</div>
 					<div v-if="summary.skipped.length">
 						<div class="text-ink-amber-3 font-medium">

@@ -1,4 +1,4 @@
-.cert-page { background: #fff; color: #14233f; font-family: "EB Garamond", Georgia, "Times New Roman", "Noto Naskh Arabic", "Amiri", serif; }
+.cert-page { background: #fff; color: #14233f; font-family: "EB Garamond", "Noto Naskh Arabic", Georgia, "Times New Roman", "Amiri", serif; }
 .cert-page div, .cert-page svg { position: absolute; }
 .cert-frame { left: 6mm; top: 6mm; width: 285mm; height: 198mm; border: 0.8mm solid #1E4FA3; -webkit-box-sizing: border-box; box-sizing: border-box; }
 .cert-frame-inner { left: 8.5mm; top: 8.5mm; width: 280mm; height: 193mm; border: 0.25mm solid #B8893A; -webkit-box-sizing: border-box; box-sizing: border-box; }
@@ -53,3 +53,4 @@
 .cert-value { position: static !important; font-size: 11pt; color: #0F2347; line-height: 1.25; }
 .cert-label-gap { margin-top: 2.2mm; }
 .cert-url { position: static !important; font-size: 6.5pt; color: #5a6b86; line-height: 1.25; word-wrap: break-word; width: 90mm; }
+.cert-ar { font-family: "Noto Naskh Arabic", serif; letter-spacing: 0; text-transform: none; }

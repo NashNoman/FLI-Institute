@@ -49,7 +49,12 @@
 									v-if="column.key == 'template_name'"
 									class="flex items-center space-x-2 leading-5 text-sm"
 								>
-									<span>{{ row.template_name }}</span>
+									<span
+										class="cursor-pointer hover:underline"
+										@click="openForm(row.name)"
+									>
+										{{ row.template_name }}
+									</span>
 									<Badge v-if="row.name == defaultTemplate" theme="blue">
 										{{ __('Default') }}
 									</Badge>
@@ -226,8 +231,7 @@ const setDefault = (row) => {
 }
 
 const deleteTemplate = (row) => {
-	if (!window.confirm(__('Delete the template {0}?').replace('{0}', row.name)))
-		return
+	if (!window.confirm(__('Delete the template {0}?').format(row.name))) return
 	call('frappe.client.delete', {
 		doctype: 'LMS Certificate Template',
 		name: row.name,
