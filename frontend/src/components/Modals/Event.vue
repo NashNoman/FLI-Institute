@@ -123,13 +123,11 @@
 								:disabled="!userIsEvaluator()"
 							/>
 							<Link
-								v-model="certificate.template"
-								:label="__('Template')"
-								doctype="Print Format"
+								v-model="certificate.certificate_template"
+								:label="__('Certificate Template')"
+								doctype="LMS Certificate Template"
 								:disabled="!userIsEvaluator()"
-								:filters="{
-									doc_type: 'LMS Certificate',
-								}"
+								:filters="{ enabled: 1 }"
 							/>
 							<FormControl
 								type="date"
@@ -210,19 +208,15 @@ const userIsEvaluator = () => {
 }
 
 const defaultTemplate = createResource({
-	url: 'frappe.client.get_value',
-	makeParams(values) {
+	url: 'lms.lms.doctype.lms_certificate.lms_certificate.get_resolved_certificate_template',
+	makeParams() {
 		return {
-			doctype: 'Property Setter',
-			fieldname: 'value',
-			filters: {
-				doc_type: 'LMS Certificate',
-				property: 'default_print_format',
-			},
+			course: props.event.course,
+			batch: props.event.batch_name,
 		}
 	},
 	onSuccess(data) {
-		certificate.template = data.value
+		certificate.certificate_template = data
 	},
 })
 
@@ -260,6 +254,7 @@ const evaluationDetails = createResource({
 			filters: {
 				member: props.event.member,
 				course: props.event.course,
+				revoked: 0,
 			},
 		}
 	},
@@ -302,7 +297,7 @@ const certificateResource = createResource({
 			published: certificate.published,
 			issue_date: certificate.issue_date,
 			expiry_date: certificate.expiry_date,
-			template: certificate.template,
+			certificate_template: certificate.certificate_template,
 			evaluator: props.event.evaluator,
 		}
 	},
@@ -334,7 +329,7 @@ const certificateDetails = createResource({
 		}
 	},
 	onError(err) {
-		certificate.template = defaultTemplate.data.value
+		defaultTemplate.reload()
 	},
 	auto: false,
 })
@@ -363,7 +358,7 @@ watch(show, () => {
 		certificate.published = true
 		certificate.issue_date = dayjs().format('YYYY-MM-DD')
 		certificate.expiry_date = null
-		certificate.template = null
+		certificate.certificate_template = null
 		certificate.name = null
 		certificateDetails.reload()
 	}
@@ -373,7 +368,7 @@ const openCertificate = (certificate) => {
 	window.open(
 		`/api/method/frappe.utils.print_format.download_pdf?doctype=LMS+Certificate&name=${
 			certificate.name
-		}&format=${encodeURIComponent(certificate.template)}`
+		}&format=${encodeURIComponent(certificate.template)}&no_letterhead=1`,
 	)
 }
 

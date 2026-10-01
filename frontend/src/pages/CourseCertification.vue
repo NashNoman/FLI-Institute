@@ -27,6 +27,21 @@
 					{{ __('Issued On') }}:
 					{{ dayjs(certificate.data.issue_date).format('DD MMM YYYY') }}
 				</div>
+				<div
+					v-if="certificate.data.serial_number"
+					class="text-sm text-ink-gray-7"
+				>
+					{{ __('Certificate No.') }}: {{ certificate.data.serial_number }}
+				</div>
+				<a
+					v-if="certificate.data.verification_token"
+					:href="`/verify/${certificate.data.verification_token}`"
+					target="_blank"
+					class="text-sm text-ink-blue-3 hover:underline"
+					@click.stop
+				>
+					{{ __('Verify') }}
+				</a>
 			</div>
 		</div>
 		<div v-else>
@@ -68,8 +83,15 @@ const certificate = createResource({
 		filters: {
 			member: user.data?.name,
 			course: props.courseName,
+			revoked: 0,
 		},
-		fieldname: ['name', 'template', 'issue_date'],
+		fieldname: [
+			'name',
+			'template',
+			'issue_date',
+			'serial_number',
+			'verification_token',
+		],
 	},
 	cache: [user.data?.name, props.courseName],
 })
@@ -117,8 +139,8 @@ const openCertificate = (certificate) => {
 	window.open(
 		`/api/method/frappe.utils.print_format.download_pdf?doctype=LMS+Certificate&name=${
 			certificate.name
-		}&format=${encodeURIComponent(certificate.template)}`,
-		'_blank'
+		}&format=${encodeURIComponent(certificate.template)}&no_letterhead=1`,
+		'_blank',
 	)
 }
 
