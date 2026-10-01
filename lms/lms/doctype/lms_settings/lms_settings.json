@@ -61,6 +61,8 @@
   "payments_app_is_not_installed",
   "email_templates_tab",
   "certification_template",
+  "default_certificate_template",
+  "certificate_serial_start",
   "batch_confirmation_template",
   "column_break_uwsp",
   "payment_reminder_template",
@@ -445,13 +447,26 @@
    "fieldname": "disable_pwa",
    "fieldtype": "Check",
    "label": "Disable PWA"
+  },
+  {
+   "fieldname": "default_certificate_template",
+   "fieldtype": "Link",
+   "label": "Default Certificate Template",
+   "options": "LMS Certificate Template"
+  },
+  {
+   "default": "1",
+   "description": "The first serial number issued to a certificate, e.g. 120539. Later certificates continue from it.",
+   "fieldname": "certificate_serial_start",
+   "fieldtype": "Int",
+   "label": "Certificate Serial Start"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-12-10 17:36:15.689695",
+ "modified": "2026-10-01 12:00:00.000000",
  "modified_by": "sayali@frappe.io",
  "module": "LMS",
  "name": "LMS Settings",
